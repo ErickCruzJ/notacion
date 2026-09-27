@@ -1,48 +1,81 @@
-def capturar_expresion(): #Función de captura una cadena
-    expresion_texto = input("Ingresa la expresión: ")
+class Utilidades:
+    """
+    Clase base que contiene utilidades compartidas para el análisis
+    de expresiones aritméticas y la presentación de tablas de seguimiento.
+    """
 
-    expresion_limpia = expresion_texto.replace(" ", "") #Limpiar los espacios en blanco
+    @staticmethod
+    def es_operador(caracter):
+        """Comprueba si un símbolo es un operador aritmético."""
+        return caracter in ("+", "-", "*", "/", "^")
 
-    tokens = [] #Convertimos la cadena limpia en una lista de caracteres individualizados
-    for caracter in expresion_limpia: #Por cada caracter en la cadena
-        tokens.append(caracter) #Agregar el caracter a la lista
+    @staticmethod
+    def prioridad(operador):
+        """Retorna el nivel de precedencia del operador."""
+        prioridades = {"+": 1, "-": 1, "*": 2, "/": 2, "^": 3}
+        return prioridades.get(operador, 0)
 
-    return tokens #Devolver la lista
+    @staticmethod
+    def tokenizar(expresion):
+        """
+        Convierte una cadena de texto en una lista de tokens.
+        Soporta números de varios dígitos, letras y operadores.
+        """
+        tokens = []
+        numero = ""
 
-def infija_a_posfija(tokens): #Función de infija a posfija requiere parametro lista
-    salida = [] #Lista 
-    pila_operadores = [] #Lista
+        for caracter in expresion:
+            if caracter == " ":
+                continue
 
-    prioridad = {'+': 1, '-': 1, '*': 2, '/': 2, '^': 3} #Diccionario de prioridades
+            if caracter.isdigit():
+                numero += caracter
+            else:
+                if numero:
+                    tokens.append(numero)
+                    numero = ""
+                tokens.append(caracter)
 
-    for simbolo in tokens: #Por cada elemento de la lista
-        
-        if simbolo.isalnum(): #Si es una letra o número (operando) (Metodo nativo "is alpha-numeric" A-Z, a-z, 0-9)
-            salida.append(simbolo) #Guardar en la lista salir
+        if numero:
+            tokens.append(numero)
 
-        elif simbolo == '(': #Si es un paréntesis que abre
-            pila_operadores.append(simbolo) #Guardar en la lista pila_operadores
+        return tokens
 
-        elif simbolo == ')': #Si es un paréntesis que cierra
-            while pila_operadores and pila_operadores[-1] != '(': #Mientras que la lista pila_operadores no este vacia y que el ultimo elemento no sea (
-                salida.append(pila_operadores.pop()) #Se saca los elemento de la lista pila_operador y se agregan a la lista salida
-            pila_operadores.pop()  #Eliminamos el ( de la lista pila_operacion
+    @staticmethod
+    def validar_parentesis(tokens):
+        """Valida si los paréntesis de la expresión están balanceados."""
+        contador = 0
+        for token in tokens:
+            if token == "(":
+                contador += 1
+            elif token == ")":
+                contador -= 1
+                if contador < 0:
+                    return False
+        return contador == 0
 
-        elif simbolo in prioridad: #Si es un operador (+, -, *, /, ^)
-            while (pila_operadores and pila_operadores[-1] in prioridad and prioridad[pila_operadores[-1]] >= prioridad[simbolo]): #Repetir si la pila_operadores tiene un operador (el ultimo guardado comparado en el diccionario) que ya está en la pila tiene mayor o igual prioridad que el nuevo operador que quiere agregar
-                salida.append(pila_operadores.pop()) #Se saca los elemento de la lista pila_operador y se agregan a la lista salida
-            pila_operadores.append(simbolo) #Se agrega en la lista pila_operadores el caracter
+    @staticmethod
+    def mostrar_proceso(pasos, titulo="PROCESO DE CONVERSIÓN"):
+        """Muestra la tabla de seguimiento del proceso de conversión."""
+        print("\n----------------------------------------")
+        print(titulo)
+        print("----------------------------------------")
+        print(
+            f"{'Paso':<6}"
+            f"{'Token':<8}"
+            f"{'Acción':<42}"
+            f"{'Pila':<15}"
+            f"{'Salida'}"
+        )
+        print("-" * 110)
 
-    while pila_operadores: #Vaciar los operadores restantes de la pila a la salida
-        salida.append(pila_operadores.pop()) #Se saca los elemento de la lista pila_operador y se agregan a la lista salida
-
-    return salida #Devolver la lista salida
-
-if __name__ == "__main__":
-    tokens = capturar_expresion()
-    print("\nTokens Infijos:", tokens)
-
-    #Conversiones directas
-    posfija = infija_a_posfija(tokens)
-
-    print("Notación Posfija (Postorden):", posfija)
+        for paso in pasos:
+            pila_str = " ".join(paso["pila"])
+            salida_str = " ".join(paso["salida"])
+            print(
+                f"{paso['paso']:<6}"
+                f"{paso['token']:<8}"
+                f"{paso['accion']:<42}"
+                f"{pila_str:<15}"
+                f"{salida_str}"
+            )
