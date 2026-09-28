@@ -3,97 +3,385 @@ from posfija import posfija
 from prefijo import prefija
 from arbol import ArbolExpresion
 
+
 class Main:
-    """Clase principal encargada de orquestar la ejecución del programa."""
+    """
+    Clase principal encargada de orquestar
+    la ejecución del programa.
+    """
 
     def __init__(self):
+
         self.conv_posfija = posfija()
+
         self.conv_prefija = prefija()
+
         self.arbol = ArbolExpresion()
 
     def ejecutar(self):
-        print("=" * 50)
+
+        # ====================================================
+        # ENCABEZADO
+        # ====================================================
+
+        print("=" * 70)
         print("       CONVERSOR Y VISUALIZADOR DE ÁRBOLES")
-        print("=" * 50)
+        print("=" * 70)
 
-        expresion = input("\nIntroduce una expresión infija (ej: (A+B)*(C-D) ):\n> ")
+        # ====================================================
+        # ENTRADA
+        # ====================================================
 
-        # 1. Tokenización y Validación
-        tokens = Utilidades.tokenizar(expresion)
-        if not Utilidades.validar_parentesis(tokens):
-            print("\n[ERROR] Los paréntesis no están balanceados.")
+        expresion = input(
+            "\nIntroduce una expresión infija "
+            "(ej: (A+B)*(C-D)):\n> "
+        )
+
+        # ====================================================
+        # TOKENIZACIÓN
+        # ====================================================
+
+        tokens = Utilidades.tokenizar(
+            expresion
+        )
+
+        # ====================================================
+        # VALIDACIÓN
+        # ====================================================
+
+        if not Utilidades.validar_parentesis(
+            tokens
+        ):
+
+            print(
+                "\n[ERROR] "
+                "Los paréntesis no están balanceados."
+            )
+
             return
-#==================================
-#Prefija
-#==================================
-        # 1. Obtener token
-        print("\n----------------------------------------")
-        print("EXPRESIÓN INFIJA (TOKENS)")
-        print("----------------------------------------")
-        print(" ".join(tokens))
 
-        # 2. Conversión a Prefija y Proceso
-        prefijo, pasos_prefijo = self.conv_prefija.convertir(tokens)
-        Utilidades.mostrar_proceso(pasos_prefijo, "PROCESO DE CONVERSIÓN A PREFIJO")
+        # ====================================================
+        # EXPRESIÓN ORIGINAL
+        # ====================================================
 
-        print("\n----------------------------------------")
+        print("\n" + "=" * 70)
+        print("EXPRESIÓN INICIAL")
+        print("=" * 70)
+
+        print(
+            " ".join(tokens)
+        )
+
+        # ====================================================
+        #                  PREFIJA
+        # ====================================================
+
+        print("\n\n")
+        print("#" * 70)
+        print("                     NOTACIÓN PREFIJA")
+        print("#" * 70)
+
+        # ----------------------------------------------------
+        # CONVERSIÓN A PREFIJA
+        # ----------------------------------------------------
+
+        prefijo, pasos_prefijo = (
+            self.conv_prefija.convertir(
+                tokens
+            )
+        )
+
+        # ----------------------------------------------------
+        # TABLA DE CONVERSIÓN
+        # ----------------------------------------------------
+
+        Utilidades.mostrar_proceso(
+            pasos_prefijo,
+            "PROCESO DE CONVERSIÓN A PREFIJO"
+        )
+
+        # ----------------------------------------------------
+        # RESULTADO PREFIJO
+        # ----------------------------------------------------
+
+        print("\n" + "-" * 70)
         print("RESULTADO PREFIJO")
-        print("----------------------------------------")
-        print(" ".join(prefijo))
+        print("-" * 70)
 
-        # 3. Construcción y Despliegue del Árbol (desde notación Prefija)
-        self.arbol.construir_desde_prefija(prefijo)
+        print(
+            " ".join(prefijo)
+        )
+
+        # ----------------------------------------------------
+        # CONSTRUIR ÁRBOL DESDE PREFIJA
+        # ----------------------------------------------------
+
+        self.arbol.construir_desde_prefija(
+            prefijo
+        )
+
+        # ----------------------------------------------------
+        # MOSTRAR ÁRBOL
+        # ----------------------------------------------------
+
+        print("\n")
         self.arbol.mostrar_arbol()
-        
-        # 4. Recorrido
-        print("\n----------------------------------------")
-        print("RECORRIDO PREFIJO DEL ÁRBOL (Preorden)")
-        print("----------------------------------------")
-        print(" → ".join(self.arbol.recorrido_prefijo()))
 
-#==================================
-#Posfija
-#==================================
-        # 1. Obtener token
-        print("\n----------------------------------------")
-        print("EXPRESIÓN INFIJA (TOKENS)")
-        print("----------------------------------------")
-        print(" ".join(tokens))
+        # ----------------------------------------------------
+        # REGLA DEL RECORRIDO
+        # ----------------------------------------------------
 
-        # 2. Conversión a Posfija y Proceso
-        posfija, pasos_posfija = self.conv_posfija.convertir(tokens)
-        Utilidades.mostrar_proceso(pasos_posfija, "PROCESO DE CONVERSIÓN A POSFIJO")
+        print("\n" + "-" * 70)
+        print("RECORRIDO PREFIJO")
+        print("-" * 70)
 
-        print("\n----------------------------------------")
+        print(
+            "Orden: RAÍZ → IZQUIERDA → DERECHA"
+        )
+
+        # ----------------------------------------------------
+        # TABLA DEL RECORRIDO
+        # ----------------------------------------------------
+
+        pasos_recorrido_prefijo = (
+            self.arbol.proceso_recorrido_prefijo()
+        )
+
+        Utilidades.mostrar_proceso_recorrido(
+            pasos_recorrido_prefijo,
+            "PROCESO DEL RECORRIDO PREFIJO"
+        )
+
+        # ----------------------------------------------------
+        # RESULTADO DEL RECORRIDO
+        # ----------------------------------------------------
+
+        resultado_prefijo = (
+            self.arbol.recorrido_prefijo()
+        )
+
+        print("\n" + "-" * 70)
+        print("RESULTADO DEL RECORRIDO PREFIJO")
+        print("-" * 70)
+
+        print(
+            " → ".join(
+                resultado_prefijo
+            )
+        )
+
+        # ====================================================
+        #                  POSFIJA
+        # ====================================================
+
+        print("\n\n")
+        print("#" * 70)
+        print("                     NOTACIÓN POSFIJA")
+        print("#" * 70)
+
+        # ----------------------------------------------------
+        # CONVERSIÓN A POSFIJA
+        # ----------------------------------------------------
+
+        posfijo, pasos_posfijo = (
+            self.conv_posfija.convertir(
+                tokens
+            )
+        )
+
+        # ----------------------------------------------------
+        # TABLA DE CONVERSIÓN
+        # ----------------------------------------------------
+
+        Utilidades.mostrar_proceso(
+            pasos_posfijo,
+            "PROCESO DE CONVERSIÓN A POSFIJO"
+        )
+
+        # ----------------------------------------------------
+        # RESULTADO POSFIJO
+        # ----------------------------------------------------
+
+        print("\n" + "-" * 70)
         print("RESULTADO POSFIJO")
-        print("----------------------------------------")
-        print(" ".join(posfija))
+        print("-" * 70)
 
-        # 3. Construcción y Despliegue del Árbol (desde notación Posfija)
-        self.arbol.construir_desde_posfija(posfija)
+        print(
+            " ".join(posfijo)
+        )
+
+        # ----------------------------------------------------
+        # CONSTRUIR ÁRBOL DESDE POSFIJA
+        # ----------------------------------------------------
+
+        self.arbol.construir_desde_posfija(
+            posfijo
+        )
+
+        # ----------------------------------------------------
+        # MOSTRAR ÁRBOL
+        # ----------------------------------------------------
+
+        print("\n")
         self.arbol.mostrar_arbol()
 
-        # 4. Recorrido
-        print("\n----------------------------------------")
-        print("RECORRIDO POSFIJO DEL ÁRBOL (Postorden)")
-        print("----------------------------------------")
-        print(" → ".join(self.arbol.recorrido_posfijo()))
+        # ----------------------------------------------------
+        # REGLA DEL RECORRIDO
+        # ----------------------------------------------------
 
-#==================================
-#Infija (recorrido)
-#==================================
-        # 1. Construcción y Despliegue del Árbol (desde notación Posfija)
-        self.arbol.construir_desde_infija(tokens)
+        print("\n" + "-" * 70)
+        print("RECORRIDO POSFIJO")
+        print("-" * 70)
+
+        print(
+            "Orden: IZQUIERDA → DERECHA → RAÍZ"
+        )
+
+        # ----------------------------------------------------
+        # TABLA DEL RECORRIDO
+        # ----------------------------------------------------
+
+        pasos_recorrido_posfijo = (
+            self.arbol.proceso_recorrido_posfijo()
+        )
+
+        Utilidades.mostrar_proceso_recorrido(
+            pasos_recorrido_posfijo,
+            "PROCESO DEL RECORRIDO POSFIJO"
+        )
+
+        # ----------------------------------------------------
+        # RESULTADO DEL RECORRIDO
+        # ----------------------------------------------------
+
+        resultado_posfijo = (
+            self.arbol.recorrido_posfijo()
+        )
+
+        print("\n" + "-" * 70)
+        print("RESULTADO DEL RECORRIDO POSFIJO")
+        print("-" * 70)
+
+        print(
+            " → ".join(
+                resultado_posfijo
+            )
+        )
+
+        # ====================================================
+        #                  INFIJA
+        # ====================================================
+
+        print("\n\n")
+        print("#" * 70)
+        print("                     NOTACIÓN INFIJA")
+        print("#" * 70)
+
+        # ----------------------------------------------------
+        # TOKENS DE LA EXPRESIÓN
+        # ----------------------------------------------------
+
+        print("\n" + "-" * 70)
+        print("EXPRESIÓN INFIJA")
+        print("-" * 70)
+
+        print(
+            " ".join(tokens)
+        )
+
+        # ----------------------------------------------------
+        # CONSTRUIR ÁRBOL DESDE INFIJA
+        # ----------------------------------------------------
+
+        self.arbol.construir_desde_infija(
+            tokens
+        )
+
+        # ----------------------------------------------------
+        # MOSTRAR ÁRBOL
+        # ----------------------------------------------------
+
+        print("\n")
         self.arbol.mostrar_arbol()
 
-        # 2. Recorrido
-        print("\n----------------------------------------")
-        print("RECORRIDO INFIJO DEL ÁRBOL")
-        print("----------------------------------------")
-        print(" → ".join(self.arbol.recorrido_infijo()))
+        # ----------------------------------------------------
+        # REGLA DEL RECORRIDO
+        # ----------------------------------------------------
+
+        print("\n" + "-" * 70)
+        print("RECORRIDO INFIJO")
+        print("-" * 70)
+
+        print(
+            "Orden: IZQUIERDA → RAÍZ → DERECHA"
+        )
+
+        # ----------------------------------------------------
+        # TABLA DEL RECORRIDO
+        # ----------------------------------------------------
+
+        pasos_recorrido_infijo = (
+            self.arbol.proceso_recorrido_infijo()
+        )
+
+        Utilidades.mostrar_proceso_recorrido(
+            pasos_recorrido_infijo,
+            "PROCESO DEL RECORRIDO INFIJO"
+        )
+
+        # ----------------------------------------------------
+        # RESULTADO DEL RECORRIDO
+        # ----------------------------------------------------
+
+        resultado_infijo = (
+            self.arbol.recorrido_infijo()
+        )
+
+        print("\n" + "-" * 70)
+        print("RESULTADO DEL RECORRIDO INFIJO")
+        print("-" * 70)
+
+        print(
+            " → ".join(
+                resultado_infijo
+            )
+        )
+
+        # ====================================================
+        # RESUMEN
+        # ====================================================
+
+        print("\n\n")
+        print("=" * 70)
+        print("                         RESUMEN")
+        print("=" * 70)
+
+        print(
+            "\nPrefija : "
+            + " ".join(prefijo)
+        )
+
+        print(
+            "Posfija : "
+            + " ".join(posfijo)
+        )
+
+        print(
+            "Infija  : "
+            + " ".join(resultado_infijo)
+        )
+
+        print("\n" + "=" * 70)
+        print("                    FIN DEL PROGRAMA")
+        print("=" * 70)
+
+
+# ========================================================
+# EJECUCIÓN DEL PROGRAMA
+# ========================================================
 
 if __name__ == "__main__":
-    app = Main()
-    app.ejecutar()
 
-#Prueba
+    app = Main()
+
+    app.ejecutar()
